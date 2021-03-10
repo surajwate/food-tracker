@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g
+from flask import Flask, render_template, g, request
 import sqlite3
 
 app = Flask(__name__)
@@ -26,8 +26,10 @@ def index():
 def view():
     return render_template('day.html')
 
-@app.route('/food')
+@app.route('/food', methods=[ 'POST', 'GET'])
 def food():
+    if request.method == 'POST':
+        return "{} {} {} {}".format(request.form['food-name'], request.form['protein'], request.form['carbohydrates'], request.form['fat'])
     return render_template('add_food.html')
 
 if __name__ == '__main__':
