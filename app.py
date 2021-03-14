@@ -39,14 +39,18 @@ def index():
         'select entry_date from log_date order by entry_date desc')
     results = cur.fetchall()
 
-    pretty_results = []
+    date_results = []
 
     for i in results:
         single_date = {}
+
+        single_date['entry_date'] = i['entry_date']
+
         d = datetime.strptime(str(i['entry_date']), '%Y%m%d')
-        single_date['entry_date'] = datetime.strftime(d, '%B %d, %Y')
-        pretty_results.append(single_date)
-    return render_template('home.html', results=pretty_results)
+        single_date['pretty_date'] = datetime.strftime(d, '%B %d, %Y')
+
+        date_results.append(single_date)
+    return render_template('home.html', results=date_results)
 
 
 # date is from database, format eg: 20180728
@@ -101,7 +105,7 @@ def view(date):
         totals['fat'] += food['fat']
         totals['calories'] += food['calories']
 
-    return render_template('day.html', date=pretty_date, food=food_results, log_results=log_results, totals=totals)
+    return render_template('day.html', entry_date=date_result['entry_date'], pretty_date=pretty_date, food=food_results, log_results=log_results, totals=totals)
 
 
 @app.route('/food', methods=['POST', 'GET'])
