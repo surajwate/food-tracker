@@ -36,7 +36,22 @@ def index():
         db.commit()
 
     cur = db.execute(
-        'select entry_date from log_date order by entry_date desc')
+        '''
+        select 
+            log_date.entry_date, 
+            sum(food.protein) as protein, 
+            sum(food.carbohydrates) as carbohydrates, 
+            sum(food.fat) as fat, 
+            sum(food.calories) as calories 
+        from 
+            log_date 
+            join food_date on food_date.log_date_id = log_date.id 
+            join food on food.id = food_date.food_id 
+        group by 
+            log_date.id
+        order by 
+            log_date.entry_date desc        
+        ''')
     results = cur.fetchall()
 
     date_results = []
@@ -45,6 +60,10 @@ def index():
         single_date = {}
 
         single_date['entry_date'] = i['entry_date']
+        single_date['protein'] = i['protein']
+        single_date['carbohydrates'] = i['carbohydrates']
+        single_date['fat'] = i['fat']
+        single_date['calories'] = i['calories']
 
         d = datetime.strptime(str(i['entry_date']), '%Y%m%d')
         single_date['pretty_date'] = datetime.strftime(d, '%B %d, %Y')
